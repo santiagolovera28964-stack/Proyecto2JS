@@ -1,0 +1,144 @@
+--- CONFIGURACION INICIAL Y DEPENDENCIAS ---
+
+Línea: let username = "";
+Explicación: "let" es una palabra reservada en JavaScript para crear una variable (un espacio en la memoria de la computadora) cuyo valor puede cambiar después. "username" es el nombre que se le dio a esa variable. El signo "=" es para asignarle un valor. Las comillas vacías "" indican que por ahora es un texto en blanco, donde más adelante se guardará el nombre del jugador.
+
+Línea: const readline = require('readline');
+Explicación: "const" crea una variable que nunca cambiará de valor (una constante). Se llama "readline". "require('readline')" es una función predeterminada de Node.js que importa (trae) un módulo llamado readline. Este módulo es la herramienta que permite que tu programa lea lo que el usuario escribe en su teclado.
+
+Línea: const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
+Explicación: Creamos otra constante llamada "rl" (abreviatura de readline). "readline.createInterface" es la instrucción que configura cómo se van a comunicar el usuario y el programa. "input: process.stdin" le dice que la entrada de datos será el teclado, y "output: process.stdout" le dice que la salida de los textos será la pantalla de la consola.
+
+--- VARIABLES DEL JUEGO (EL ESTADO ACTUAL) ---
+
+Línea: let cedula = "33651234";
+Explicación: Crea la variable con el número de cédula que servirá como contraseña secreta para salir del juego.
+
+Línea: let arregloAhorcado = [ "escritorio", "computadora", "biblioteca"... ];
+Explicación: Los corchetes [] sirven para crear un Arreglo (Array), que no es más que una lista de elementos agrupados. Aquí se están guardando las 100 palabras del juego separadas por comas.
+
+Línea: let palabraSecreta;
+Explicación: Crea la variable pero no se le da un valor inmediatamente. Aquí se guardará la palabra aleatoria que toque adivinar en cada ronda.
+
+Línea: let opcion = "";
+Explicación: Crea la variable vacía que guardará lo que el usuario elija en el menú inicial (el número 1 o la cédula).
+
+Línea: let palabrasUsadas = [];
+Explicación: Crea un arreglo vacío []. A medida que el jugador avance, las palabras que ya salieron se irán metiendo en esta lista para que el juego no las vuelva a repetir.
+
+Líneas: let vidas = 6; let victorias = 0; let derrotas = 0;
+Explicación: Se definen variables numéricas para llevar el control de la partida. Inicias con 6 vidas, 0 victorias y 0 derrotas.
+
+Línea: let cantidadLetras;
+Explicación: Se crea la variable que más adelante servirá para guardar el número de letras que tiene la palabra secreta de turno.
+
+--- FUNCION PARA LEER EL TECLADO ---
+
+Línea: function getUserInput(question) { return new Promise((resolve) => { rl.question(question + " ", (answer) => { resolve(answer); }); }); }
+Explicación: Aquí estás creando una herramienta personalizada (function) llamada "getUserInput". "question" es el parámetro (la pregunta a hacer). "return new Promise" crea una "Promesa"; como el usuario tarda en escribir, la promesa pausa el código y le dice a la computadora: "espérame aquí hasta que te entregue el resultado". "rl.question" muestra la pregunta en pantalla. Cuando el usuario teclea algo y da Enter, la respuesta cae en la variable "answer", y "resolve(answer)" envía ese texto de vuelta al programa principal para poder usarlo.
+
+--- INICIANDO EL BUCLE PRINCIPAL ---
+
+Línea: startGame();
+Explicación: Esta sola palabra es el interruptor de encendido. Es la orden que ejecuta la función principal. Sin esto, el programa no hace absolutamente nada.
+
+Línea: async function startGame(){
+Explicación: Se declara la función principal del juego. La palabra "async" (asíncrona) es obligatoria aquí. Permite que dentro de esta función podamos usar el comando "await" (esperar) para pausar el juego mientras el usuario lee y escribe.
+
+Línea: username = await getUserInput("Cual es tu nombre?");
+Explicación: Llama a la herramienta que creamos arriba. La palabra "await" le dice al programa que se congele en esa línea hasta que el usuario responda. Lo que escriba se guarda en la variable "username".
+
+Línea: do {
+Explicación: Inicia un bucle llamado "do-while" (hacer-mientras). Significa que todo el bloque de código que viene abajo se ejecutará por lo menos una vez, y al final decidirá si se repite o no.
+
+Líneas: console.log("Bienvenido...", username); console.log("Para empezar...");
+Explicación: "console.log" es la orden directa para imprimir líneas de texto en la pantalla para que el jugador las lea.
+
+Línea: opcion = await getUserInput("Seleccione su opcion");
+Explicación: Vuelve a pausar el programa esperando que el jugador escriba si quiere jugar o salir. Lo que escriba se guarda en "opcion".
+
+Línea: if (opcion === cedula) break;
+Explicación: Un condicional. Si (if) la opción que escribió el jugador es exactamente igual (===) a la cédula, el comando "break" (romper) destruye el bucle "do" inmediatamente y el juego termina.
+
+Línea: switch (opcion) { case "1":
+Explicación: La instrucción "switch" evalúa lo que hay en "opcion". En el caso (case) de que el jugador haya escrito "1", se ejecutará todo el código de la partida que viene abajo.
+
+--- PREPARANDO LA RONDA ---
+
+Línea: if (palabrasUsadas.length === arregloAhorcado.length) { console.log("Ya se han usado todas..."); opcion = cedula; break; }
+Explicación: La propiedad ".length" cuenta cuántos elementos hay. Esta línea revisa si la cantidad de palabras usadas ya es igual a las 100 palabras del juego. Si es así (no quedan palabras), avisa en pantalla, iguala la opción a la cédula y usa "break" para cerrar el juego.
+
+Línea: do { palabraSecreta = arregloAhorcado[Math.floor(Math.random() * arregloAhorcado.length)].toLowerCase(); } while (palabrasUsadas.includes(palabraSecreta));
+Explicación: Otro bucle para buscar una palabra al azar. "Math.random()" escupe un decimal aleatorio (ej. 0.45). Al multiplicarlo por el total de palabras (100) da 45. "Math.floor()" le quita los decimales para que sea un número entero y limpio. Ese número se usa para sacar la palabra número 45 de la lista. ".toLowerCase()" asegura que esté en minúsculas. El "while" al final revisa si la palabra ya está incluida (.includes) en la lista de usadas; si es así, repite el proceso para buscar una nueva.
+
+Líneas: palabrasUsadas.push(palabraSecreta); cantidadLetras = palabraSecreta.length; vidas = 6;
+Explicación: El comando ".push()" empuja y añade la nueva palabra a la lista de usadas. Luego calcula cuántas letras tiene y le devuelve las 6 vidas al jugador.
+
+Líneas: let letrasUsadas = []; let progreso = Array(cantidadLetras).fill("");
+Explicación: Prepara la mesa de juego. Crea un arreglo vacío para guardar las teclas que presiones. Luego "Array().fill('')" crea una lista igual de larga que la palabra, pero la rellena de puros guiones bajos. Si la palabra es "hola", crea un arreglo así: _, _, _, _.
+
+--- EL BUCLE DE ADIVINANZA (JUGANDO) ---
+
+Línea: while (vidas > 0 && progreso.includes("_")) {
+Explicación: Este es el bucle del turno activo. Se repetirá MIENTRAS la variable vidas sea mayor a 0 Y (&&) el arreglo del progreso todavía contenga guiones bajos (letras ocultas).
+
+Líneas: console.log("Palabra: " + progreso.join(" ")); ...
+Explicación: Imprime la información del turno. "progreso.join(' ')" agarra la lista de guiones bajos y los une en un solo texto separado por espacios para que se vea bonito en pantalla.
+
+Línea: let entrada = await getUserInput("Ingresa una letra:");
+Explicación: Pausa la ronda y le exige al usuario que escriba una letra.
+
+Línea: if (entrada === cedula) { opcion = cedula; break; }
+Explicación: Un atajo de emergencia. Si en lugar de una letra el jugador escribe la cédula, se fuerza la salida rompiendo el ciclo con "break".
+
+Línea: let letra = entrada.toLowerCase();
+Explicación: Convierte lo que escribió el usuario a minúsculas, por si se le escapó teclear en mayúscula.
+
+Línea: if (letra.length !== 1 || !/[a-z]/.test(letra) || letra === "ñ") { console.log("ERROR..."); continue; }
+Explicación: Sistema de seguridad. "letra.length !== 1" revisa si el usuario escribió más de un carácter. "!/[a-z]/.test(letra)" es una fórmula matemática para revisar si el carácter ingresado NO pertenece al abecedario. Si alguna de estas condiciones se cumple, marca error y usa la palabra "continue;", la cual le dice al programa: ignora el código de abajo y reinicia el bucle para volver a pedirle otra letra de inmediato.
+
+Línea: if (letrasUsadas.includes(letra)) { console.log("Ya utilizaste..."); continue; }
+Explicación: Revisa si la letra ya estaba en la lista de usadas. Si sí, te avisa y usa "continue;" para reiniciar el turno sin penalizarte la vida.
+
+Línea: letrasUsadas.push(letra);
+Explicación: Si la letra era totalmente nueva y válida, la guarda en el historial del turno actual.
+
+--- REVISANDO SI ACERTASTE O FALLASTE ---
+
+Línea: if (palabraSecreta.includes(letra)) { console.log("¡Letra correcta!");
+Explicación: Pregunta si la palabra aleatoria de la ronda contiene la letra que acabas de escribir. Si es verdad, avisa que acertaste.
+
+Línea: for (let i = 0; i < palabraSecreta.length; i++) { if (palabraSecreta[i] === letra) progreso[i] = letra; }
+Explicación: Bucle explorador (for). Crea un contador "i" que empieza en cero y va subiendo de uno en uno revisando letra por letra toda la palabra. Si encuentra tu letra en la posición número 2 de la palabra secreta, va al arreglo de los guiones bajos y reemplaza el guion número 2 por esa letra para que quede visible.
+
+Línea: } else { console.log("Letra incorrecta."); vidas--; }
+Explicación: Si tu letra no estaba en la palabra secreta (else), imprime que te equivocaste y el comando "vidas--" te resta 1 punto de vida.
+
+Línea: await getUserInput("Presiona Enter para continuar...");
+Explicación: Hace una pequeña pausa visual para que alcances a leer si acertaste o no, antes de limpiar la consola.
+
+--- FINAL DE LA RONDA Y DEL JUEGO ---
+
+Línea: if (opcion === cedula) break;
+Explicación: Si usaste la cédula a medio turno, esta línea asegura que el gran menú principal también se rompa y te deje ir.
+
+Línea: if (!progreso.includes("_")) { console.log("¡Felicidades..."); victorias++; }
+Explicación: Si el arreglo de progreso ya NO (!) incluye ningún guion bajo, significa que completaste la palabra entera. Te felicita y le suma 1 a tu contador de victorias ("victorias++").
+
+Línea: else { console.log("Perdiste..."); derrotas++; }
+Explicación: Si el bucle se acabó y aún hay guiones bajos, significa que el bucle terminó porque tus vidas llegaron a cero. Te avisa que perdiste y suma 1 a tus derrotas.
+
+Línea: await getUserInput("Presiona Enter para volver al menú..."); break;
+Explicación: Pausa final de la partida. El "break" cierra la opción número 1 del menú principal y te devuelve a él.
+
+Línea: default: if (opcion !== cedula) console.log("Opción no válida."); break;
+Explicación: Esta es la parte final del "switch". Si en el menú principal llegaste a escribir un número que no era el 1, ni tampoco tu cédula, cae por defecto (default) en esta línea y te dice que la opción no existe.
+
+Línea: } while (opcion !== cedula);
+Explicación: Aquí termina el gran bucle "do" del principio de todo. Si la opción del jugador sigue siendo distinta a la cédula, todo el programa vuelve a empezar mostrando el menú de bienvenida. Si es igual a la cédula, el bucle muere.
+
+Línea: return rl.close();
+Explicación: Cierra el canal de comunicación del teclado que abrimos al principio. Es como colgar el teléfono. Esto le permite a Node.js saber que el programa por fin puede apagarse.
+
+Línea: console.log("Gracias por jugar, Saliendo del programa......");
+Explicación: Imprime el mensaje de despedida. (Un dato técnico: en tu código original, como esta línea está por fuera de la función "async", en realidad se va a imprimir al mero principio, justo cuando abres el juego, no al final. Para que funcione bien al final, tendrías que mover esta línea justo encima de "return rl.close();").
