@@ -1,16 +1,10 @@
-// version 1.0.0
-// No borrar ni modificar las constantes y variables que ya están declaradas, ya que son necesarias para el funcionamiento del juego.
-// Simplemente comenta las líneas indicadas más abajo una vez hagas las pruebas del funcionamiento del código inicial.
-
 let username = "";
-
 const readline = require('readline');
 const rl = readline.createInterface({
     input: process.stdin,
     output: process.stdout
 });
-
-let cedula = "33651234"
+let cedula = "33651234";
 let arregloAhorcado = [
     "escritorio", "computadora", "biblioteca", "estudiante", "diccionario", "universo", "galaxia", "planeta", "estrella", "cientifico",
     "biologia", "quimica", "historia", "geografia", "matematica", "literatura", "gramatica", "arquitecto", "ingeniero", "medicina",
@@ -27,16 +21,9 @@ let palabraSecreta;
 let opcion = "";
 let palabrasUsadas = [];
 let vidas = 6;
-// ------------------- Ejemplo para pedir datos al usuario ----------------------
-
-// Llama a la función getUserInput para obtener la entrada del usuario.
-// De esta manera debes pedir datos al usuario durante el juego.
-// Simplemente guardarás la respuesta en otra variable para el fin que corresponda.
-
-// ------------------- Función para pedir datos al usuario ----------------------
-// Esta función se encarga de obtener la entrada del usuario a través de la consola. 
-// Toma una pregunta como argumento, la muestra al usuario y espera su respuesta. 
-// Una vez que el usuario ingresa su respuesta, la función devuelve esa respuesta como una cadena de texto.
+let victorias = 0;
+let derrotas = 0;
+let cantidadLetras;
 function getUserInput(question) {
     return new Promise((resolve) => {
         rl.question(question + " ", (answer) => {
@@ -44,25 +31,13 @@ function getUserInput(question) {
         });
     });
 }
-//-------------------- Fin del código Espacio Educa ----------------------
-
-// Recuerda que debes seguir las instrucciones del proyecto para completar el juego.
-// Y no borres el código que ya está escrito, ya que es necesario para el funcionamiento del juego.
-// Solo comenta las líneas indicadas más arriba.
-
-// Get ur coffee and Empieza a codear!!
-
-// Declara las variables que necesitas para el juego antes de llamar a la función startGame.
-
-// Luego llama a la función startGame para iniciar el juego.
-
 startGame();
 async function startGame(){
-    username = await getUserInput("What is your name?"); // COMENTA esta linea cuando empieces a programar.
+    username = await getUserInput("Cual es tu nombre?");
     do {
-        console.log("Bienvenido al juego del ahorcado",username);
+        console.log("Bienvenido al juego del ahorcado", username);
         console.log("Para empezar a jugar por favor coloque el numero 1");
-        console.log("para salir de programa coloque la cedula del autor:",cedula);
+        console.log("para salir de programa coloque la cedula del autor:", cedula);
         console.log("Buena suerte");
         opcion = await getUserInput("Seleccione su opcion");
         if (opcion === cedula) break;
@@ -76,19 +51,59 @@ async function startGame(){
                     do {
                         palabraSecreta = arregloAhorcado[Math.floor(Math.random() * arregloAhorcado.length)].toLowerCase();
                     } while (palabrasUsadas.includes(palabraSecreta));
-                    console.log(palabraSecreta);
-                    palabrasUsadas.push(palabraSecreta);
-                    console.log(palabrasUsadas)
-                
-                }
-                
-            break;
-            
-            default:
-            console.log("Por favor escoja una opcion valida");    
-            break;
+                    palabrasUsadas.push(palabraSecreta); 
+                    cantidadLetras = palabraSecreta.length; 
+                    vidas = 6; 
+                    let letrasUsadas = []; 
+                    let progreso = Array(cantidadLetras).fill("_"); 
+                    while (vidas > 0 && progreso.includes("_")) {
+                        console.log("\n====================================="); 
+                        console.log("Palabra: " + progreso.join(" ") + " (" + cantidadLetras + " letras)"); 
+                        console.log(""); 
+                        console.log("Vidas: " + vidas + " | Letras usadas: " + letrasUsadas.join(",")); 
+                        console.log("Victorias: " + victorias + " | Derrotas: " + derrotas); 
+                        let entrada = await getUserInput("Ingresa una letra:"); 
+                        if (entrada === cedula) { 
+                            opcion = cedula; 
+                            break; 
+                        }
+                        let letra = entrada.toLowerCase(); 
+                        if (letra.length !== 1 || !/[a-z]/.test(letra) || letra === "ñ") {
+                            console.log("ERROR: Ingresa solo una letra válida (a-z, sin ñ)."); 
+                            continue; 
+                        }
+                        if (letrasUsadas.includes(letra)) { 
+                            console.log("Ya utilizaste la letra: " + letra);
+                            continue;
+                        }
+                        letrasUsadas.push(letra);    
+                        if (palabraSecreta.includes(letra)) { 
+                            console.log("¡Letra correcta!"); 
+                            for (let i = 0; i < palabraSecreta.length; i++) { 
+                                if (palabraSecreta[i] === letra) progreso[i] = letra;
+                            }
+                        } else { 
+                            console.log("Letra incorrecta."); 
+                            vidas--; 
+                        }
+                        await getUserInput("Presiona Enter para continuar..."); 
+                    }
+                    if (opcion === cedula) break; 
+                    if (!progreso.includes("_")) { 
+                        console.log("\n¡Felicidades " + username + "! Ganaste. La palabra era: " + palabraSecreta); 
+                        victorias++; 
+                    } else { 
+                        console.log("\nPerdiste todas tus vidas. La palabra era: " + palabraSecreta); 
+                        derrotas++; 
+                    }
+                    await getUserInput("Presiona Enter para volver al menú..."); 
+                    break; 
+                } 
+            default: 
+                if (opcion !== cedula) console.log("Opción no válida."); 
+                break; 
         }
-    } while (opcion !== cedula);
-    // Aquí va la lógica principal del juego.
-    return rl.close(); // Linea que hace que el programa se cierre una vez termine el juego. No la borres ni comentes.
+    } while (opcion !== cedula);   
+    return rl.close(); 
 }
+console.log("Gracias por jugar, Saliendo del programa......");
