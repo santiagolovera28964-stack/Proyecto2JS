@@ -20,7 +20,7 @@ let arregloAhorcado = [
 let palabraSecreta;
 let opcion = "";
 let palabrasUsadas = [];
-let vidas = 6;
+let vidas = 3;
 let victorias = 0;
 let derrotas = 0;
 let cantidadLetras;
@@ -53,7 +53,7 @@ async function startGame(){
                     } while (palabrasUsadas.includes(palabraSecreta));
                     palabrasUsadas.push(palabraSecreta); 
                     cantidadLetras = palabraSecreta.length; 
-                    vidas = 6; 
+                    vidas = 3; 
                     let letrasUsadas = []; 
                     let progreso = Array(cantidadLetras).fill("_"); 
                     while (vidas > 0 && progreso.includes("_")) {
